@@ -49,6 +49,3 @@ class ModelConfig:
     focal_gamma = 2.5
     epochs = 20
     device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
-
-
-CHANNELS = ("red", "green", "blue", "yellow")
