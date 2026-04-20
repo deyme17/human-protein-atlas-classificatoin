@@ -1,4 +1,4 @@
-from config import DataConfig, PathConfig
+from config import DataConfig, PathConfig, TrainConfig
 from pathlib import Path
 import random as rnd
 import pandas as pd
@@ -10,10 +10,12 @@ from torch.optim import lr_scheduler as lrs
 import torch
 
 
+
 def set_seed(seed: int):
     rnd.seed(seed)
     np.random.seed(seed)
     torch.manual_seed(seed)
+
 
 
 def prepare_train_data(df: pd.DataFrame) -> tuple[list, list]:
@@ -29,6 +31,7 @@ def prepare_train_data(df: pd.DataFrame) -> tuple[list, list]:
     return ids, labels_list
 
 
+
 def save_checkpoint(model: nn.Module, 
                     optimizer: Optimizer, 
                     scheduler: lrs.LRScheduler, 
@@ -39,3 +42,33 @@ def save_checkpoint(model: nn.Module,
         "optimizer": optimizer.state_dict(),
         "scheduler": scheduler.state_dict() if scheduler is not None else None
     }, Path(PathConfig.checkpoints_dir / f"{model_name}.pt"))
+
+
+
+def load_model(model_name: str, model_cls: type[nn.Module]) -> tuple[nn.Module, dict]:
+    path = PathConfig.checkpoints_dir / f"{model_name}.pt"
+    if not path.exists():
+        raise FileNotFoundError(f"Checkpoint not found: {path}")
+
+    checkpoint = torch.load(path, map_location=TrainConfig.device)
+    if "model" not in checkpoint:
+        raise KeyError(f"'model' key not found in checkpoint: {path}")
+
+    model = model_cls().to(TrainConfig.device)
+    try:
+        model.load_state_dict(checkpoint["model"], strict=True)
+    except RuntimeError as e:
+        raise RuntimeError(
+            f"Failed to load state_dict for {model_cls.__name__}: {e}"
+        )
+    model.eval()
+
+    return model, checkpoint
+
+
+
+def calculate_weights(train_labels: list[torch.Tensor]) -> torch.Tensor:
+    class_counts = torch.stack(train_labels).sum(dim=0)
+    total_labels = len(train_labels)
+    weights = torch.sqrt(total_labels / class_counts.clamp(min=1))
+    return weights
