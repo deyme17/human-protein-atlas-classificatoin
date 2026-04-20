@@ -1,7 +1,7 @@
 from config import DataConfig, PathConfig
 from pathlib import Path
 
-from torch.utils.data import DataLoader
+from torch.utils.data import DataLoader, Sampler
 import torch
 
 from .dataset import ProteinDataset
@@ -23,12 +23,14 @@ def get_dataset(image_ids: list[str],
 
 def get_dataloader(dataset: ProteinDataset,
                    batch_size: int,
+                   sampler: Sampler,
                    num_workers: int = DataConfig.n_workers,
                    drop_last: bool = False,
                    pin_memory: bool = True) -> DataLoader:
     return DataLoader(
         dataset,
         batch_size=batch_size,
+        sampler=sampler,
         num_workers=num_workers,
         drop_last=drop_last,
         pin_memory=pin_memory
