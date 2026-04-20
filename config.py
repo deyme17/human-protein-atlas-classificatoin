@@ -38,6 +38,7 @@ class DataConfig:
     input_dim = 512
     input_ch = 4
     n_classes = 28
+    n_workers = 3
     
 
 class ModelConfig:
