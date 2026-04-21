@@ -91,3 +91,9 @@ class TrainConfig:
             "min_lr": 0
         },
     }
+    sampler = {
+        "use": True,
+        "rare_threshold": 100,  
+        # we use sampler only for super-rare classes,
+        # because we already have focal/asl
+    }
