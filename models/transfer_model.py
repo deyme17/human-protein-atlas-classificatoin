@@ -30,6 +30,11 @@ class BaseTransferModel(nn.Module, ABC):
     def _get_backbone_params(self) -> list:
         """Return parameters of the backbone (excluding classifier)."""
         pass
+
+    @abstractmethod
+    def name(self) -> str:
+        "Return a name of a model."
+        pass
     
     def _apply_freezing(self, freeze_until: int = -1) -> None:
         """

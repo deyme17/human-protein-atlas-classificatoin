@@ -63,3 +63,7 @@ class TransferEfficientNetV2(BaseTransferModel):
         """Return parameters of the backbone (excluding classifier)."""
         self._backbone_layers = list(self._backbone.features.children())
         self._backbone_layers.append(self._backbone.avgpool)
+
+    def name(self) -> str:
+        """Return the name of the model."""
+        return "efficientnet_v2"
