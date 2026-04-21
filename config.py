@@ -1,6 +1,5 @@
 import torch
 from pathlib import Path
-from utils import load_class_weights, load_thresholds
 
 
 
@@ -18,16 +17,16 @@ class PathConfig:
     external_labels_path = data_dir / "external.csv"
     sample_submission_path = data_dir / "sample_submission.csv"
 
-    datasets_dir = data_dir / "datasets"
+    saved_datasets_dir = data_dir / "saved_datasets"
 
-    train_ds_path = datasets_dir / "train_ds.pth"
-    valid_ds_path = datasets_dir / "valid_ds.pth"
-    test_ds_path = datasets_dir / "test_ds.pth"
+    train_ds_path = saved_datasets_dir / "train_ds.pth"
+    valid_ds_path = saved_datasets_dir / "valid_ds.pth"
+    test_ds_path = saved_datasets_dir / "test_ds.pth"
 
-    def __init__(self):
-        self.checkpoints_dir.mkdir(parents=True, exist_ok=True)
-        self.submission_dir.mkdir(parents=True, exist_ok=True)
-        self.datasets_dir.mkdir(parents=True, exist_ok=True)
+    # mkdirs
+    checkpoints_dir.mkdir(parents=True, exist_ok=True)
+    submission_dir.mkdir(parents=True, exist_ok=True)
+    saved_datasets_dir.mkdir(parents=True, exist_ok=True)
 
 
 class DataConfig:
@@ -71,7 +70,8 @@ class TrainConfig:
     loss = {
         "name": "focal",
         "parameters": {
-            "alpha": load_class_weights(),
+            "alpha": torch.tensor([], 
+                                  dtype=float, device=device),
             "gamma": 2.5,
             "reduction": "mean",
             "device": device
@@ -89,4 +89,3 @@ class TrainConfig:
             "min_lr": 0
         },
     }
-    thresholds = load_thresholds()
