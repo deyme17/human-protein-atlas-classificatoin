@@ -2,7 +2,6 @@ import torch
 from pathlib import Path
 
 
-
 class PathConfig:
     data_dir = Path("data").resolve()
     checkpoints_dir = Path("checkpoints").resolve()
@@ -70,8 +69,9 @@ class TrainConfig:
     loss = {
         "name": "focal",
         "parameters": {
-            "alpha": torch.tensor([], 
-                                  dtype=float, device=device),
+            "alphas": torch.tensor([0.00899, 0.09245, 0.03203, 0.07371, 0.06241, 0.0461, 0.11505, 0.04105, 2.20648, 2.54594, 4.13715, 
+                                    0.10608, 0.16829, 0.21585, 0.10887, 5.5162, 0.21822, 0.55162, 0.12795, 0.07837, 0.67545, 0.03076, 
+                                    0.14432, 0.03898, 0.36106, 0.01409, 0.35335, 9.92916], dtype=float, device=device),
             "gamma": 2.5,
             "reduction": "mean",
             "device": device
