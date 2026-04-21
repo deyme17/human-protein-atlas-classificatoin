@@ -46,6 +46,8 @@ class TrainConfig:
     classifier_lr = 0.001
 
     epochs = 20
+    early_stop = 5
+    max_norm = 1.5
     device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
  
     model = {
