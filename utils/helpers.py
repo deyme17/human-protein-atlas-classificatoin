@@ -34,7 +34,7 @@ def prepare_train_data(df: pd.DataFrame) -> tuple[list, list]:
 
 def save_checkpoint(model: nn.Module, 
                     optimizer: Optimizer, 
-                    scheduler: lrs.LRScheduler, 
+                    scheduler: lrs.LRScheduler|None, 
                     epoch: int, model_name: str = "model") -> None:
     torch.save({
         "epoch": epoch,
@@ -45,7 +45,7 @@ def save_checkpoint(model: nn.Module,
 
 
 
-def load_model(model_name: str, model_cls: type[nn.Module]) -> tuple[nn.Module, dict]:
+def load_checkpoint(model_name: str, model: nn.Module) -> tuple[nn.Module, dict]:
     path = PathConfig.checkpoints_dir / f"{model_name}.pt"
     if not path.exists():
         raise FileNotFoundError(f"Checkpoint not found: {path}")
@@ -53,13 +53,12 @@ def load_model(model_name: str, model_cls: type[nn.Module]) -> tuple[nn.Module, 
     checkpoint = torch.load(path, map_location=TrainConfig.device)
     if "model" not in checkpoint:
         raise KeyError(f"'model' key not found in checkpoint: {path}")
-
-    model = model_cls().to(TrainConfig.device)
+    model.to(TrainConfig.device)
     try:
         model.load_state_dict(checkpoint["model"], strict=True)
     except RuntimeError as e:
         raise RuntimeError(
-            f"Failed to load state_dict for {model_cls.__name__}: {e}"
+            f"Failed to load state_dict for {model.__name__}: {e}"
         )
     model.eval()
 
