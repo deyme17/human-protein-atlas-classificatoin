@@ -6,6 +6,10 @@ def step(optimizer, last_epoch=-1, step_size=80, gamma=0.1, **_):
     return lr_scheduler.StepLR(optimizer, step_size=step_size, gamma=gamma, last_epoch=last_epoch)
 
 
+def none(optimizer, last_epoch, **_):
+  return lr_scheduler.StepLR(optimizer, step_size=10000000, last_epoch=last_epoch)
+
+
 def multi_step(optimizer, last_epoch=-1, milestones=None, gamma=0.1, **_):
     if milestones is None:
         milestones = [500, 5000]
