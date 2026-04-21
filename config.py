@@ -1,5 +1,6 @@
 import torch
 from pathlib import Path
+from utils import calculate_weights
 
 
 
@@ -41,12 +42,50 @@ class DataConfig:
     n_workers = 3
     
 
-class ModelConfig:
+class TrainConfig:
     seed = 275
     backbone_lr = 0.0001
     classifier_lr = 0.001
-    lr_reduce = 0.5
-    lr_patience = 3
-    focal_gamma = 2.5
+
     epochs = 20
-    device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
+    device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
+ 
+    model = {
+        "name": "efficientnet_v2",
+        "parameters": {
+            "num_classes": DataConfig.n_classes,
+            "freeze_until": -1,
+            "dropout_rate": 0.3,
+            "small": True,
+        },
+    }
+    optimizer = {
+        "name": "adamw",
+        "parameters": {
+            # lr is not required because optimizers accepts param_group as argument
+            "betas": (0.9, 0.999),
+            "weight_decay": 1e-4,
+            "amsgrad": False,
+        },
+    }
+    loss = {
+        "name": "focal",
+        "parameters": {
+            "alpha": calculate_weights(),
+            "gamma": 2.5,
+            "reduction": "mean",
+            "device": device
+        },
+    }
+    lr_scheduler = {
+        "name": "reduce_lr_on_plateau",
+        "parameters": {
+            "mode": "min", 
+            "factor": 0.5, 
+            "patience": 4,
+            "threshold": 0.001, 
+            "threshold_mode": "rel",
+            "cooldown": 0, 
+            "min_lr": 0
+        },
+    }
