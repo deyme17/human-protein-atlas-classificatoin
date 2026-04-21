@@ -15,7 +15,7 @@ def save_dataset(ds: ProteinDataset, path: Path):
 
 
 def load_dataset(path: Path, transform=None) -> ProteinDataset:
-    state = torch.load(path)
+    state = torch.load(path, weights_only=False)
     ds = ProteinDataset(
         image_ids=state['image_ids'],
         labels=state['labels'],
