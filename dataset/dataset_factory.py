@@ -23,7 +23,7 @@ def get_dataset(image_ids: list[str],
 
 def get_dataloader(dataset: ProteinDataset,
                    batch_size: int,
-                   sampler: Sampler,
+                   sampler: Sampler|None = None,
                    num_workers: int = DataConfig.n_workers,
                    drop_last: bool = False,
                    pin_memory: bool = True) -> DataLoader:
