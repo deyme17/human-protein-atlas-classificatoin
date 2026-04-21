@@ -52,3 +52,7 @@ if __name__ == "__main__":
     pos_weights = calculate_pos_weight(train_ds.labels)
     pos_weights = [round(w, 5) for w in pos_weights.tolist()]
     print(f"\nPos weights:\n{pos_weights}")
+
+    sampler_weights = calculate_sample_weights(train_ds.labels)
+    sampler_weights = [round(w, 5) for w in sampler_weights.tolist()]
+    print(f"\nPos weights:\n{sampler_weights[:100]}")
