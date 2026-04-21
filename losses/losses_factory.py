@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 from config import TrainConfig, DataConfig
 from .focal_loss import FocalLoss
-from .assymetric_loss import AssymetricLoss
+from .asymmetric_loss import AsymmetricLoss
 
 
 def focal(alphas=None, gamma=2.0, reduction="mean", device=TrainConfig.device, **_):
@@ -12,7 +12,7 @@ def focal(alphas=None, gamma=2.0, reduction="mean", device=TrainConfig.device, *
 
 
 def assymetric(gamma_neg=4, gamma_pos=1, clip=0.05, **_):
-    return AssymetricLoss(gamma_neg=gamma_neg, gamma_pos=gamma_pos, clip=clip)
+    return AsymmetricLoss(gamma_neg=gamma_neg, gamma_pos=gamma_pos, clip=clip)
 
 
 def bce(pos_weight=None, reduction="mean", **_):
