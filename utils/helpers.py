@@ -64,11 +64,3 @@ def load_model(model_name: str, model_cls: type[nn.Module]) -> tuple[nn.Module, 
     model.eval()
 
     return model, checkpoint
-
-
-
-def calculate_weights(train_labels: list[torch.Tensor]) -> torch.Tensor:
-    class_counts = torch.stack(train_labels).sum(dim=0)
-    total_labels = len(train_labels)
-    weights = torch.sqrt(total_labels / class_counts.clamp(min=1))
-    return weights
