@@ -6,16 +6,16 @@ import imagehash
 import hashlib
 
 
-def compute_hash(img_id: str, root: Path = PathConfig.train_dir) -> str:
+def compute_hash(img_path: Path) -> str:
     h = hashlib.md5()
-    with open(root / f"{img_id}.png", "rb") as f:
+    with open(img_path, "rb") as f:
         for chunk in iter(lambda: f.read(8192), b""):
             h.update(chunk)
     return h.hexdigest()
 
 
-def compute_phash(img_id: str, root: Path = PathConfig.train_dir) -> int:
-    with Image.open(root / f"{img_id}.png") as img:
+def compute_phash(img_path: Path) -> int:
+    with Image.open(img_path) as img:
         arr = np.array(img)
         # use only 3 channels: RGB
         if arr.ndim == 3 and arr.shape[2] == 4:

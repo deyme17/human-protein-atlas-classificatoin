@@ -11,11 +11,18 @@ import numpy as np
 def build_hash_df(image_ids: list[str], root: Path = PathConfig.train_dir) -> pd.DataFrame:
     records = []
     for img_id in tqdm(image_ids, desc="Hashing"):
-        records.append({
-            "Id": img_id,
-            "hash": compute_hash(img_id, root),
-            "phash": compute_phash(img_id, root),
-        })
+        img_path = root / f"{img_id}.png"
+        if not img_path.exists():
+            continue
+        try:
+            records.append({
+                "Id": img_id,
+                "hash": compute_hash(img_path),
+                "phash": compute_phash(img_path),
+            })
+        except Exception as e:
+            print(f"[WARN] Failed on {img_id}: {e}")
+            continue
     return pd.DataFrame(records)
 
 
