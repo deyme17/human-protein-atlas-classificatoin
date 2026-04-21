@@ -14,11 +14,12 @@ def compute_hash(img_path: Path) -> str:
     return h.hexdigest()
 
 
-def compute_phash(img_path: Path) -> imagehash.ImageHash:
+def compute_phash(img_path: Path) -> int:
     with Image.open(img_path) as img:
         arr = np.array(img)
         # use only 3 channels: RGB
         if arr.ndim == 3 and arr.shape[2] == 4:
             arr = arr[:, :, :3]
         img = Image.fromarray(arr, mode="RGB")
-        return imagehash.phash(img)
+        ph = imagehash.phash(img)
+        return int(str(ph), 16)
