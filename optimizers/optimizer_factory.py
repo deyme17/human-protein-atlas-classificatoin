@@ -25,10 +25,10 @@ _OPTIMIZERS = {
 }
 
 
-def get_optimizer(parameters) -> optim.Optimizer:
+def get_optimizer(param_groups) -> optim.Optimizer:
     cfg = TrainConfig.optimizer
     name = cfg["name"].lower()
     params = cfg.get("parameters", {})
     if name not in _OPTIMIZERS:
         raise ValueError(f"Unknown optimizer '{name}'. Available: {list(_OPTIMIZERS)}")
-    return _OPTIMIZERS[name](parameters, **params)
+    return _OPTIMIZERS[name](param_groups, **params)
