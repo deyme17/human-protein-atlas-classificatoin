@@ -1,6 +1,6 @@
 import torch
 from pathlib import Path
-from utils import calculate_weights
+from utils import load_class_weights, load_thresholds
 
 
 
@@ -71,7 +71,7 @@ class TrainConfig:
     loss = {
         "name": "focal",
         "parameters": {
-            "alpha": calculate_weights(),
+            "alpha": load_class_weights(),
             "gamma": 2.5,
             "reduction": "mean",
             "device": device
@@ -89,3 +89,4 @@ class TrainConfig:
             "min_lr": 0
         },
     }
+    thresholds = load_thresholds()
