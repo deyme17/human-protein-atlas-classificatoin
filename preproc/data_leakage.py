@@ -58,7 +58,8 @@ def assign_groups(hash_df: pd.DataFrame, threshold: int = 8) -> pd.DataFrame:
 
     # unpackbits optimization
     hashes = hash_df["phash"].values.astype(np.uint64)
-    hashes_matrix = np.unpackbits(hashes.view(np.uint8), axis=1).astype(bool)  # (N, 64)
+    hashes_bytes = hashes.byteswap().view(np.uint8).reshape(-1, 8)
+    hashes_matrix = np.unpackbits(hashes_bytes, axis=1)
     ids = hash_df["Id"].tolist()
     
     # build tree with metric='hamming' for a fast search
