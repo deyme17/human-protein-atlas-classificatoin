@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 
 
-def visualize_training(history: dict[str, list[float]]) -> None:
+def visualize_training(history: dict[str, list[float]], save: bool = False) -> None:
     fig, ax = plt.subplots(2, 1, figsize=(10, 6))
     ax[0].plot(history['train_loss'], label='Train Loss')
     ax[0].plot(history['valid_loss'], label='Valid Loss')
@@ -13,4 +13,8 @@ def visualize_training(history: dict[str, list[float]]) -> None:
     ax[1].set_title('F1 Scores')
     ax[1].legend()
     plt.tight_layout()
-    plt.show()
+    if save:
+        fig.savefig("training_plot.png")
+        plt.close(fig)
+    else:
+        plt.show()
