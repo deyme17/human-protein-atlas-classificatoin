@@ -1,6 +1,7 @@
-from utils import compute_hash, compute_phash, DSU
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from utils import compute_hashes, DSU
 from sklearn.neighbors import BallTree
-from config import PathConfig
+from config import PathConfig, DataConfig
 from pathlib import Path
 from tqdm import tqdm
 import pandas as pd
@@ -9,20 +10,25 @@ import numpy as np
 
 
 def build_hash_df(image_ids: list[str], root: Path = PathConfig.train_dir) -> pd.DataFrame:
-    records = []
-    for img_id in tqdm(image_ids, desc="Hashing"):
-        img_path = root / f"{img_id}.png"
-        if not img_path.exists():
-            continue
+    def process_one(img_id, root):
+        path = root / f"{img_id}.png"
+        if not path.exists():
+            return None
         try:
-            records.append({
-                "Id": img_id,
-                "hash": compute_hash(img_path),
-                "phash": compute_phash(img_path),
-            })
+            md5, phash = compute_hashes(path)
+            return {"Id": img_id, "hash": md5, "phash": phash}
         except Exception as e:
             print(f"[WARN] Failed on {img_id}: {e}")
-            continue
+            return None
+        
+    records = []
+    with ThreadPoolExecutor(max_workers=DataConfig.n_workers) as ex:
+        futures = [ex.submit(process_one, img_id, root) for img_id in image_ids]
+        for f in tqdm(as_completed(futures), total=len(futures), desc="Hashing"):
+            res = f.result()
+            if res is not None:
+                records.append(res)
+
     return pd.DataFrame(records)
 
 
