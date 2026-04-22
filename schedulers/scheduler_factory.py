@@ -49,6 +49,7 @@ _SCHEDULERS = {
 def get_scheduler(optimizer, last_epoch: int = -1):
     cfg = TrainConfig.lr_scheduler
     name = cfg["name"].lower()
+    print(f"LR Scheduler: {name}")
     params = cfg.get("parameters", {})
     if name not in _SCHEDULERS:
         raise ValueError(f"Unknown scheduler '{name}'. Available: {list(_SCHEDULERS)}")

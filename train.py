@@ -78,7 +78,8 @@ if __name__ == "__main__":
 
     sampler = (get_sampler(train_ds.labels, rare_threshold=TrainConfig.sampler["rare_threshold"])
                                                   if TrainConfig.sampler["use"] else None)
-
+    
+    print(f"Creating dataloaders with num_workers={DataConfig.n_workers}")
     train_loader = get_dataloader(
         train_ds,
         batch_size=DataConfig.train_batch,

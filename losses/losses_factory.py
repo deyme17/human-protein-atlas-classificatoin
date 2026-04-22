@@ -36,6 +36,7 @@ _LOSSES = {
 def get_loss() -> nn.Module:
     cfg = TrainConfig.loss
     name = cfg["name"].lower()
+    print(f"Loss function: {name}")
     params = cfg.get("parameters", {})
     if name not in _LOSSES:
         raise ValueError(f"Unknown loss '{name}'. Available: {list(_LOSSES)}")
