@@ -11,8 +11,7 @@ class ProteinDataset(Dataset):
     def __init__(self, image_ids: list[str],
                  labels: list[torch.Tensor] | None = None,
                  train_root: Path = PathConfig.train_dir,
-                 external_root: Path = PathConfig.external_dir,
-                 npy_cache_dir: Path = PathConfig.npy_cache_dir,
+                 external_root: Path = PathConfig.external_dir, 
                  transform=None
                 ):
         self.image_ids = image_ids
@@ -20,11 +19,6 @@ class ProteinDataset(Dataset):
         self.train_root = train_root
         self.external_root = external_root
         self.transform = transform
-        self.npy_cache_dir = npy_cache_dir
-        if not npy_cache_dir.exists():
-            raise FileNotFoundError(
-                f"NPY cache not found at {npy_cache_dir}."
-            )
 
     def __len__(self) -> int:
         return len(self.image_ids)
@@ -33,23 +27,23 @@ class ProteinDataset(Dataset):
         image = self._load_image(self.image_ids[idx])
         if self.transform is not None:
             image = self.transform(image)
-        label = self.labels[idx] if self.labels is not None else torch.tensor([])
-        return image, label
+
+        if self.labels is not None:
+            label = self.labels[idx]
+            return image, label
+        else:
+            return image, torch.tensor([])
 
     def _load_image(self, image_id: str) -> torch.Tensor:
         """
-        Load pre-resized uint8 .npy -> float32 tensor (4, H, W) in [0, 1].
+        Load 4-channel PNG image tensor: ((R, G, B, Y), H, W)
         """
-        npy_path = self.npy_cache_dir / f"{image_id}.npy"
-        arr = np.load(npy_path)                       # (H, W, 4) uint8
-        arr = arr.astype(np.float32) * (1.0 / 255.0)  # fused cast+scale, no copy
-        return torch.from_numpy(arr).permute(2, 0, 1).contiguous()
-
-    def _load_image_png(self, image_id: str) -> torch.Tensor:
-        root = self.train_root if '-' in image_id else self.external_root
-        path = root / f"{image_id}.png"
+        path = self._resolve_root(image_id) / f"{image_id}.png"
         img = Image.open(path)
         if img.mode != "RGBA":
             img = img.convert("RGBA")
-        arr = np.asarray(img, dtype=np.float32) / 255.0
-        return torch.from_numpy(arr).permute(2, 0, 1).contiguous()
+        image = np.asarray(img, dtype=np.float32) / 255.0
+        return torch.from_numpy(image).permute(2, 0, 1).contiguous()
+
+    def _resolve_root(self, image_id: str) -> Path:
+        return self.train_root if '-' in image_id else self.external_root

@@ -16,7 +16,6 @@ human-protein-atlas-classification/
 ├── find_optimal_thresholds.py   # per-class threshold optimization on validation set
 ├── make_submission.py           # builds submission.csv from probs + thresholds
 ├── create_dataset.py            # preprocessing → saves .pth datasets
-│
 ├── data/
 │
 ├── training/
@@ -31,24 +30,18 @@ human-protein-atlas-classification/
 │   ├── dataset.py               # ProteinDataset
 │   └── dataset_factory.py       # get_dataloader()
 |
-├── models/
-│   └── model_factory.py         # get_model()
-|
-├── losses/
-│   └── losses_factory.py        # get_loss() Focal loss / ASL (Ridnik et al., ICCV 2021)
-|
+├── models/                      # get_model()
+├── losses/                      # get_loss() Focal loss / ASL (Ridnik et al., ICCV 2021)
 ├── transforms/                  # get_transforms()
 ├── optimizers/                  # get_optimizer(), Adam / AdamW / SGD
 ├── schedulers/                  # get_scheduler(), Cosine / StepLR / ReduceLROnPlateau
 │
+├── utils/
 ├── tools/
 │   ├── convert_to_rgby.py       # converts raw images to 4-channel .png
 │   ├── load_external.py         # loads external HPA data
-│   ├── preprocess_to_npy.py     # convert png images to numpy arrays
 │   └── make_external_csv.py     # builds labels CSV for external data
-│
-├── utils/
-│
+|
 ├── checkpoints/                 # saved model checkpoints (.pt)
 │   └── thresholds/              # per-class threshold tensors (.pt)
 ├── submissions/
@@ -85,20 +78,21 @@ python tools/load_external.py
 # → data/raw/external/
 ```
 
-**Preprocess to .npy cache**
+**Convert to 4-channel RGBY**
 
 ```bash
-python tools/preprocess_to_npy.py
-# reads separate _red/_green/_blue/_yellow PNGs from data/raw/
-# → data/npy_cache/
+python tools/convert_to_rgby.py --input_dir data/raw/train --output_dir data/train
+python tools/convert_to_rgby.py --input_dir data/raw/test --output_dir data/test
+python tools/convert_to_rgby.py --input_dir data/raw/external --output_dir data/external
 ```
 
-`data/raw/` can be removed after preprocessing. The expected data layout:
+After conversion `data/raw/` can be removed. The expected data layout:
 
 ```
 data/
-├── npy_cache/             # pre-resized RGBA .npy images
-│   └── valid_ids.csv      # IDs that were successfully processed
+├── train/                 # RGBY .png train images
+├── test/                  # RGBY .png test images
+├── external/              # RGBY .png external images
 ├── train.csv
 ├── external.csv
 └── sample_submission.csv
