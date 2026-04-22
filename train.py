@@ -85,12 +85,14 @@ if __name__ == "__main__":
         shuffle=sampler is None,
         sampler=sampler,
         num_workers=DataConfig.n_workers,
+        pin_memory=TrainConfig.device == torch.device("cuda")
     )
     valid_loader = get_dataloader(
         valid_ds,
         batch_size=DataConfig.valid_batch,
         shuffle=False,
         num_workers=DataConfig.n_workers,
+        pin_memory=TrainConfig.device == torch.device("cuda")
     )
 
     # model
