@@ -63,7 +63,7 @@ if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser(description="Train a model.")
     parser.add_argument("--name", type=str, default="model", help="Checkpoint name (used for saving)")
-    parser.add_argument("--checkpoint", type=str, efault=None, help="Path to checkpoint to resume from")
+    parser.add_argument("--checkpoint", type=str, default=None, help="Path to checkpoint to resume from")
     parser.add_argument("--patience", type=int, default=TrainConfig.early_stop)
     parser.add_argument("--threshold", type=float, default=0.3, help="Classification threshold")
     parser.add_argument("--max_norm", type=float, default=None, help="Gradient clipping max norm")
@@ -75,7 +75,7 @@ if __name__ == "__main__":
     train_ds = load_dataset(PathConfig.train_ds_path)
     valid_ds = load_dataset(PathConfig.valid_ds_path)
 
-    sampler = (get_sampler(train_ds, rare_threshold=TrainConfig.sampler["rare_threshold"])
+    sampler = (get_sampler(train_ds.labels, rare_threshold=TrainConfig.sampler["rare_threshold"])
                                                   if TrainConfig.sampler["use"] else None)
 
     train_loader = get_dataloader(
