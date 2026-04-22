@@ -36,8 +36,8 @@ def get_dataloader(dataset: ProteinDataset,
         shuffle=shuffle,
         sampler=sampler,
         num_workers=num_workers,
-        prefetch_factor=prefetch_factor,
-        persistent_workers=persistent_workers,
+        prefetch_factor=prefetch_factor if num_workers > 0 else None,
+        persistent_workers=persistent_workers if num_workers > 0 else None,
         drop_last=drop_last,
         pin_memory=pin_memory
     )
