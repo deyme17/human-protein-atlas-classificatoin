@@ -11,6 +11,7 @@ class PathConfig:
     train_dir = data_dir / "train"
     external_dir =  data_dir / "external"
     test_dir = data_dir / "test"
+    npy_cache_dir = data_dir / "npy_cache"
 
     train_labels_path = data_dir / "train.csv"
     external_labels_path = data_dir / "external.csv"
@@ -25,6 +26,10 @@ class PathConfig:
     test_ds_path = saved_datasets_dir / "test_ds.pth"
 
     # mkdirs
+    train_dir.mkdir(parents=True, exist_ok=True)
+    external_dir.mkdir(parents=True, exist_ok=True)
+    test_dir.mkdir(parents=True, exist_ok=True)
+    npy_cache_dir.mkdir(parents=True, exist_ok=True)
     checkpoints_dir.mkdir(parents=True, exist_ok=True)
     submission_dir.mkdir(parents=True, exist_ok=True)
     saved_datasets_dir.mkdir(parents=True, exist_ok=True)
@@ -33,15 +38,17 @@ class PathConfig:
 
 class DataConfig:
     val_fraction = 0.15
-    train_batch = 16
+    train_batch = 64
     valid_batch = 32
     test_batch = 32
 
     input_dim = 512
     input_ch = 4
     n_classes = 28
-    n_workers = 3
-    
+
+    n_workers = 8
+    persistent_workers = True
+    prefetch_factor = 4
 
 class TrainConfig:
     seed = 275
@@ -67,7 +74,7 @@ class TrainConfig:
         "parameters": {
             # lr is not required because optimizers accepts param_group as argument
             "betas": (0.9, 0.999),
-            "weight_decay": 1e-4,
+            "weight_decay": 5e-3,
             "amsgrad": False,
         },
     }

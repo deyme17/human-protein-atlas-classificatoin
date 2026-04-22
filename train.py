@@ -19,8 +19,11 @@ from schedulers.scheduler_factory import get_scheduler
 def train(model: nn.Module, optimizer: optim.Optimizer, criterion: nn.Module, train_loader: DataLoader, valid_loader: DataLoader,
           scheduler: lrs.LRScheduler|None = None, threshold: torch.Tensor|float = 0.3, num_epochs: int = TrainConfig.epochs, curr_epoch: int = 0, 
           max_norm: float|None = TrainConfig.max_norm, patience: int = TrainConfig.early_stop, model_name: str = "model", device: torch.device = TrainConfig.device) -> dict:
-    if not torch.cuda.is_available():
+    if device == torch.device("cpu"):
         print("[WARNING] CUDA is not available.")
+    else:
+        print("CUDA is used for training.")
+        torch.backends.cudnn.benchmark = True
 
     history = {'train_loss': [], 'valid_loss': [], 'f1_macro': [], 'f1_micro': [], 'f1_samples': []}
     best_f1_macro = 0.0
@@ -86,6 +89,8 @@ if __name__ == "__main__":
         shuffle=sampler is None,
         sampler=sampler,
         num_workers=DataConfig.n_workers,
+        prefetch_factor=DataConfig.prefetch_factor,
+        persistent_workers=DataConfig.persistent_workers,
         pin_memory=TrainConfig.device == torch.device("cuda")
     )
     valid_loader = get_dataloader(
@@ -93,6 +98,8 @@ if __name__ == "__main__":
         batch_size=DataConfig.valid_batch,
         shuffle=False,
         num_workers=DataConfig.n_workers,
+        prefetch_factor=DataConfig.prefetch_factor,
+        persistent_workers=DataConfig.persistent_workers,
         pin_memory=TrainConfig.device == torch.device("cuda")
     )
 

@@ -26,6 +26,8 @@ def get_dataloader(dataset: ProteinDataset,
                    shuffle: bool,
                    sampler: Sampler|None = None,
                    num_workers: int = DataConfig.n_workers,
+                   prefetch_factor: int = DataConfig.n_workers,
+                   persistent_workers: bool = DataConfig.n_workers,
                    drop_last: bool = False,
                    pin_memory: bool = True) -> DataLoader:
     return DataLoader(
@@ -34,6 +36,8 @@ def get_dataloader(dataset: ProteinDataset,
         shuffle=shuffle,
         sampler=sampler,
         num_workers=num_workers,
+        prefetch_factor=prefetch_factor,
+        persistent_workers=persistent_workers,
         drop_last=drop_last,
         pin_memory=pin_memory
     )
