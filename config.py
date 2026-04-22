@@ -17,6 +17,8 @@ class PathConfig:
     sample_submission_path = data_dir / "sample_submission.csv"
 
     saved_datasets_dir = data_dir / "saved_datasets"
+    probs_dir = submission_dir / "probs"
+    thresholds_dir = checkpoints_dir / "thresholds"
 
     train_ds_path = saved_datasets_dir / "train_ds.pth"
     valid_ds_path = saved_datasets_dir / "valid_ds.pth"
@@ -26,7 +28,8 @@ class PathConfig:
     checkpoints_dir.mkdir(parents=True, exist_ok=True)
     submission_dir.mkdir(parents=True, exist_ok=True)
     saved_datasets_dir.mkdir(parents=True, exist_ok=True)
-
+    probs_dir.mkdir(parents=True, exist_ok=True)
+    thresholds_dir.mkdir(parents=True, exist_ok=True)
 
 class DataConfig:
     val_fraction = 0.15
