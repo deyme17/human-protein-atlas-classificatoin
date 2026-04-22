@@ -44,6 +44,7 @@ human-protein-atlas-classification/
 ├── tools/
 │   ├── convert_to_rgby.py       # converts raw images to 4-channel .png
 │   ├── load_external.py         # loads external HPA data
+│   ├── preprocess_to_npy.py     # convert png images to numpy arrays
 │   └── make_external_csv.py     # builds labels CSV for external data
 │
 ├── utils/
@@ -84,21 +85,20 @@ python tools/load_external.py
 # → data/raw/external/
 ```
 
-**Convert to 4-channel RGBY**
+**Preprocess to .npy cache**
 
 ```bash
-python tools/convert_to_rgby.py --input_dir data/raw/train --output_dir data/train
-python tools/convert_to_rgby.py --input_dir data/raw/test --output_dir data/test
-python tools/convert_to_rgby.py --input_dir data/raw/external --output_dir data/external
+python tools/preprocess_to_npy.py
+# reads separate _red/_green/_blue/_yellow PNGs from data/raw/
+# → data/npy_cache/
 ```
 
-After conversion `data/raw/` can be removed. The expected data layout:
+`data/raw/` can be removed after preprocessing. The expected data layout:
 
 ```
 data/
-├── train/                 # RGBY .png train images
-├── test/                  # RGBY .png test images
-├── external/              # RGBY .png external images
+├── npy_cache/             # pre-resized RGBA .npy images
+│   └── valid_ids.csv      # IDs that were successfully processed
 ├── train.csv
 ├── external.csv
 └── sample_submission.csv
