@@ -74,6 +74,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     set_seed(TrainConfig.seed)
+    torch.cuda.empty_cache()
 
     # data
     train_ds = load_dataset(PathConfig.train_ds_path)

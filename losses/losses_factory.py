@@ -5,10 +5,10 @@ from .focal_loss import FocalLoss
 from .asymmetric_loss import AsymmetricLoss
 
 
-def focal(alphas=None, gamma=2.0, reduction="mean", device=TrainConfig.device, **_):
+def focal(alphas=None, gamma=2.0, reduction="mean", **_):
     if alphas is None:
         alphas = torch.ones(DataConfig.n_classes)
-    return FocalLoss(alphas=alphas.to(device), gamma=gamma, reduction=reduction)
+    return FocalLoss(alphas=alphas, gamma=gamma, reduction=reduction)
 
 
 def assymetric(gamma_neg=4, gamma_pos=1, clip=0.05, **_):
