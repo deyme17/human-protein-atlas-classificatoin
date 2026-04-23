@@ -90,7 +90,7 @@ class TrainConfig:
     lr_scheduler = {
         "name": "reduce_lr_on_plateau",
         "parameters": {
-            "mode": "min", 
+            "mode": "max", 
             "factor": 0.65, 
             "patience": 4,
             "threshold": 0.001, 
