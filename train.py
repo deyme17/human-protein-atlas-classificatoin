@@ -49,7 +49,7 @@ def train(model: nn.Module, optimizer: optim.Optimizer, criterion: nn.Module, tr
             history[k].append(v)
 
         if f1_macro >= best_f1_macro:
-            save_checkpoint(model, optimizer, scheduler, epoch, model_name)
+            save_checkpoint(model, optimizer, scheduler, epoch, f"{model_name}_e{epoch+1}")
             best_f1_macro = f1_macro
             patience_counter = 0
         else:
