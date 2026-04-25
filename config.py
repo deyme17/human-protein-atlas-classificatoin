@@ -49,12 +49,12 @@ class DataConfig:
     prefetch_factor = 2
 
 class TrainConfig:
-    seed = 275
-    backbone_lr = 0.0001
+    seed = 277
+    backbone_lr = 0.0003
     classifier_lr = 0.001
 
     epochs = 20
-    early_stop = 4
+    early_stop = 5
     max_norm = 1.5
     device = torch.device('cuda')
  
@@ -82,7 +82,7 @@ class TrainConfig:
             "alphas": torch.tensor([0.00899, 0.09245, 0.03203, 0.07371, 0.06241, 0.0461, 0.11505, 0.04105, 2.20648, 2.54594, 4.13715, 
                                     0.10608, 0.16829, 0.21585, 0.10887, 5.5162, 0.21822, 0.55162, 0.12795, 0.07837, 0.67545, 0.03076, 
                                     0.14432, 0.03898, 0.36106, 0.01409, 0.35335, 9.92916], dtype=float),
-            "gamma": 2,
+            "gamma": 2.2,
             "reduction": "mean",
             "device": device
         },
@@ -100,8 +100,8 @@ class TrainConfig:
         },
     }
     sampler = {
-        "use": True,
-        "rare_threshold": 100,  
+        "use": False,
+        "rare_threshold": 100,
         # we use sampler only for super-rare classes,
         # because we already have focal/asl
     }
