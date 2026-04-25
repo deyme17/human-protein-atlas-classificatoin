@@ -63,3 +63,11 @@ def load_checkpoint(model_name: str, model: nn.Module) -> tuple[nn.Module, dict]
     model.eval()
 
     return model, checkpoint
+
+
+
+def load_thresholds(model_name: str) -> torch.Tensor:
+    path = PathConfig.thresholds_dir / f"{model_name}.pt"
+    if not path.exists():
+        raise FileNotFoundError(f"Thresholds not found: {path}")
+    return torch.load(path)
