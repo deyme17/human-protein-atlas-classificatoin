@@ -9,10 +9,17 @@ import numpy as np
 
 
 
-def build_hash_df(image_ids: list[str], root: Path = PathConfig.train_dir) -> pd.DataFrame:
-    def process_one(img_id, root):
-        path = root / f"{img_id}.png"
+def build_hash_df(image_ids: list[str], 
+                  train_root: Path = PathConfig.train_dir, 
+                  external_root: Path = PathConfig.external_dir) -> pd.DataFrame:
+    
+    def resolve_root(img_id):
+        return train_root if '-' in img_id else external_root
+    
+    def process_one(img_id):
+        path = resolve_root(img_id) / f"{img_id}.png"
         if not path.exists():
+            print(f"[WARN] Not found: {path}")
             return None
         try:
             md5, phash = compute_hashes(path)
@@ -23,7 +30,7 @@ def build_hash_df(image_ids: list[str], root: Path = PathConfig.train_dir) -> pd
         
     records = []
     with ThreadPoolExecutor(max_workers=DataConfig.n_workers) as ex:
-        futures = [ex.submit(process_one, img_id, root) for img_id in image_ids]
+        futures = [ex.submit(process_one, img_id) for img_id in image_ids]
         for f in tqdm(as_completed(futures), total=len(futures), desc="Hashing"):
             res = f.result()
             if res is not None:
