@@ -22,14 +22,12 @@ def get_dataset(image_ids: list[str],
 
 
 def get_dataloader(dataset: ProteinDataset,
-                   batch_size: int,
-                   shuffle: bool,
+                   batch_size: int, shuffle: bool,
                    sampler: Sampler|None = None,
                    num_workers: int = DataConfig.n_workers,
-                   prefetch_factor: int = DataConfig.n_workers,
-                   persistent_workers: bool = DataConfig.n_workers,
-                   drop_last: bool = False,
-                   pin_memory: bool = True) -> DataLoader:
+                   prefetch_factor: int = DataConfig.persistent_workers,
+                   persistent_workers: bool = DataConfig.persistent_workers,
+                   drop_last: bool = False, pin_memory: bool = True) -> DataLoader:
     return DataLoader(
         dataset,
         batch_size=batch_size,
