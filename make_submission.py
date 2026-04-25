@@ -2,6 +2,7 @@ import torch
 import pandas as pd
 import numpy as np
 from pathlib import Path
+from utils import load_thresholds, load_probs
 
 from config import PathConfig, DataConfig
 
@@ -35,23 +36,23 @@ def make_submission(probs: torch.Tensor, image_ids: list[str],
 if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser(description="Build submission from saved probs.")
-    parser.add_argument("--probs", type=str, required=True, help="Path to probs .pt file")
-    parser.add_argument("--thresholds", type=str, default=None, help="Path to thresholds .pt file")
-    parser.add_argument("--threshold", type=float, default=0.3, help="Single threshold (used if --thresholds not provided)")
+    parser.add_argument("--name", type=str, required=True, help="Name of probs and thresholds .pt files")
+    parser.add_argument("--threshold", type=float, default=0.3, help="Single threshold (used if thresholds not found)")
     parser.add_argument("--out", type=str, default=None, help="Output filename (default: <probs_stem>.csv)")
     args = parser.parse_args()
+    name = args.name
 
     # load probs
-    state = torch.load(args.probs, map_location="cpu")
+    state = load_probs(name)
     probs = state["probs"]
     image_ids = state["image_ids"]
     print(f"Loaded probs {tuple(probs.shape)} for {len(image_ids)} images.")
 
     # load thresholds
-    if args.thresholds is not None:
-        thresholds = torch.load(args.thresholds, map_location="cpu")
-        print(f"Loaded per-class thresholds from '{args.thresholds}'.")
-    else:
+    try:
+        thresholds = load_thresholds(name)
+        print(f"Loaded per-class thresholds '{name}'.")
+    except:
         thresholds = args.threshold
         print(f"Using single threshold={thresholds}.")
 
@@ -59,7 +60,7 @@ if __name__ == "__main__":
     sample_submission = pd.read_csv(PathConfig.sample_submission_path)
     submission = make_submission(probs, image_ids, thresholds, sample_submission)
 
-    out_name = args.out or f"{Path(args.probs).stem}.csv"
+    out_name = args.out or f"{Path(name).stem}.csv"
     out_path = PathConfig.submission_dir / out_name
     submission.to_csv(out_path, index=False)
     print(f"Submission saved to '{out_path}'.")

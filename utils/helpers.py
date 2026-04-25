@@ -66,8 +66,14 @@ def load_checkpoint(model_name: str, model: nn.Module) -> tuple[nn.Module, dict]
 
 
 
-def load_thresholds(model_name: str) -> torch.Tensor:
+def load_thresholds(model_name: str, map_location="cpu") -> torch.Tensor:
     path = PathConfig.thresholds_dir / f"{model_name}.pt"
     if not path.exists():
         raise FileNotFoundError(f"Thresholds not found: {path}")
-    return torch.load(path)
+    return torch.load(path, map_location)
+
+def load_probs(model_name: str, map_location="cpu") -> torch.Tensor:
+    path = PathConfig.probs_dir / f"{model_name}.pt"
+    if not path.exists():
+        raise FileNotFoundError(f"Probs not found: {path}")
+    return torch.load(path, map_location)

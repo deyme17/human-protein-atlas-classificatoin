@@ -136,9 +136,7 @@ Saves raw probability tensor to `submissions/probs/<name>.pt`.
 
 ```bash
 # with optimized thresholds
-python make_submission.py \
-    --probs submissions/probs/model_name.pt \
-    --thresholds checkpoints/thresholds/model_name.pt
+python make_submission.py --name model_name # use thresholds and probs of a model (if exist)
 ```
 
 ## Key Design Decisions
