@@ -14,14 +14,14 @@ def save_dataset(ds: ProteinDataset, path: Path):
 
 
 def load_dataset(path: Path, 
-                 train_root: Path = PathConfig.train_dir, 
+                 data_root: Path = PathConfig.train_dir, 
                  external_root: Path = PathConfig.external_dir, 
                  transform=None) -> ProteinDataset:
     state = torch.load(path, weights_only=False)
     ds = ProteinDataset(
         image_ids=state['image_ids'],
         labels=state['labels'],
-        train_root=train_root,
+        data_root=data_root,
         external_root=external_root,
         transform=transform or state['transform']
     )

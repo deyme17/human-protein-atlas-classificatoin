@@ -10,13 +10,13 @@ from PIL import Image
 class ProteinDataset(Dataset):
     def __init__(self, image_ids: list[str],
                  labels: list[torch.Tensor] | None = None,
-                 train_root: Path = PathConfig.train_dir,
+                 data_root: Path = PathConfig.train_dir,
                  external_root: Path = PathConfig.external_dir, 
                  transform=None
                 ):
         self.image_ids = image_ids
         self.labels = labels
-        self.train_root = train_root
+        self.data_root = data_root
         self.external_root = external_root
         self.transform = transform
 
@@ -46,4 +46,4 @@ class ProteinDataset(Dataset):
         return torch.from_numpy(image).permute(2, 0, 1).contiguous()
 
     def _resolve_root(self, image_id: str) -> Path:
-        return self.train_root if '-' in image_id else self.external_root
+        return self.data_root if '-' in image_id else self.external_root

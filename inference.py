@@ -32,7 +32,8 @@ if __name__ == "__main__":
     out_path.parent.mkdir(parents=True, exist_ok=True)
 
     # data
-    test_ds = load_dataset(PathConfig.test_ds_path)
+    test_ds = load_dataset(PathConfig.test_ds_path, 
+                           data_root=PathConfig.test_dir)
     test_loader = get_dataloader(
         test_ds,
         batch_size=DataConfig.test_batch,
