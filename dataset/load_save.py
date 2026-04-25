@@ -1,4 +1,5 @@
 from .dataset import ProteinDataset
+from transforms import get_transforms
 from config import PathConfig
 import torch
 from pathlib import Path
@@ -23,6 +24,10 @@ def load_dataset(path: Path,
         labels=state['labels'],
         data_root=data_root,
         external_root=external_root,
-        transform=transform or state['transform']
+        transform=(
+            transform or 
+            state.get('transform', None) or 
+            get_transforms()
+        )
     )
     return ds
