@@ -40,7 +40,14 @@ def create_dataset():
     # update combined_df and labels
     dedup_ids = set(hash_df["Id"])
     original_ids = pd.concat([train_df, external_df], ignore_index=True)["Id"].tolist()
-    all_labels = [lbl for img_id, lbl in zip(original_ids, all_labels) if img_id in dedup_ids]
+
+    id_to_label = {
+        img_id: lbl
+        for img_id, lbl in zip(original_ids, all_labels)
+        if img_id in dedup_ids
+    }
+    # hash_df is sorted — align labels to its order
+    all_labels = [id_to_label[img_id] for img_id in hash_df["Id"]]
     combined_df = combined_df[combined_df["Id"].isin(dedup_ids)].reset_index(drop=True)
 
     print(f"\nAfter dedup: {len(combined_df)} samples")

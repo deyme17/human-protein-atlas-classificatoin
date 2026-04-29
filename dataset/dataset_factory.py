@@ -25,7 +25,7 @@ def get_dataloader(dataset: ProteinDataset,
                    batch_size: int, shuffle: bool,
                    sampler: Sampler|None = None,
                    num_workers: int = DataConfig.n_workers,
-                   prefetch_factor: int = DataConfig.persistent_workers,
+                   prefetch_factor: int = DataConfig.prefetch_factor,
                    persistent_workers: bool = DataConfig.persistent_workers,
                    drop_last: bool = False, pin_memory: bool = True) -> DataLoader:
     return DataLoader(
