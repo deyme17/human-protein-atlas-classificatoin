@@ -6,6 +6,33 @@ Human Protein Atlas (HPA) image classification pipeline with focus on class imba
 
 Multi-label classification of 28 subcellular protein localization patterns from 4-channel fluorescence microscopy images (RGBY: red, green, blue, yellow). The pipeline handles extreme class imbalance (pos/neg ratio up to 1:2600) and prevents data leakage via cell-line-aware stratified splitting.
 
+## Results
+
+**Public Leaderboard Score: 0.55457** (Macro F1) — achieved with a single EfficientNetV2-S model, no ensembling.
+
+| Split | Macro F1 |
+|---|---|
+| Validation | 0.583 |
+| Public Leaderboard | 0.555 |
+
+### Training Configuration
+
+| Parameter | Value |
+|---|---|
+| Input size | 512 × 512 |
+| Backbone | EfficientNetV2-S |
+| Dropout | 0.3 |
+| Optimizer | AdamW (β₁=0.9, β₂=0.999) |
+| Weight decay | 5e-3 |
+| Backbone LR | 3e-4 |
+| Classifier LR | 1e-3 |
+| LR scheduler | ReduceLROnPlateau (factor=0.65, patience=4) |
+| Loss | Focal (γ=2.2, per-class α) |
+| Batch size | 32 |
+| Max epochs | 20 |
+| Early stopping | 5 epochs |
+| Grad clip (max norm) | 1.5 |
+
 ## Project Structure
 
 ```
@@ -31,7 +58,7 @@ human-protein-atlas-classification/
 │   └── dataset_factory.py       # get_dataloader()
 |
 ├── models/                      # get_model()
-├── losses/                      # get_loss() Focal loss / ASL (Ridnik et al., ICCV 2021)
+├── losses/                      # get_loss() Focal loss / ASL
 ├── transforms/                  # get_transforms()
 ├── optimizers/                  # get_optimizer(), Adam / AdamW / SGD
 ├── schedulers/                  # get_scheduler(), Cosine / StepLR / ReduceLROnPlateau
@@ -141,13 +168,17 @@ python make_submission.py --name model_name # use thresholds and probs of a mode
 
 ## Key Design Decisions
 
-**Class imbalance** — 28 classes with extreme imbalance (pos/neg up to 1:2660). Handled via Asymmetric Loss (ASL) as the primary mechanism, with optional mild `WeightedRandomSampler` (log-scaled, mean-pooled) for coverage of the rarest classes.
+**Model** — EfficientNetV2-S pretrained on ImageNet, adapted for 4-channel RGBY input. The first conv layer is expanded from 3→4 channels: RGB weights are copied from the pretrained model, the 4th channel (yellow/ER) is initialized with the mean of the RGB weights. Differential learning rates are used: lower LR for the backbone (`3e-4`), higher for the classifier head (`1e-3`).
+
+**Class imbalance** — 28 classes with extreme imbalance (pos/neg up to 1:2660). Handled via Focal Loss (γ=2.2) with per-class alpha weights derived from inverse label frequency. No random oversampler was used.
 
 **Data leakage** — cell lines appear across train and external splits. DSU-based leakage detection ensures no cell line overlaps the validation set.
 
-**Threshold optimization** — global threshold (0.3) is used during training for monitoring. Per-class thresholds are optimized post-hoc on the validation set via grid search.
+**Threshold optimization** — global threshold (0.5) is used during training for monitoring. Per-class thresholds are calibrated on the validation set using a prevalence-matching strategy: for each class, the threshold is set to the `(1 − prevalence)`-th quantile of predicted probabilities, so the fraction of positive predictions matches the true class frequency. Inspired by [@pudae81](https://www.kaggle.com/pudae81)'s 3rd place solution.
 
 ## References
 
+- Lin et al., *Focal Loss for Dense Object Detection*, ICCV 2017 — [arXiv](https://arxiv.org/abs/1708.02002)
 - Ridnik et al., *Asymmetric Loss For Multi-Label Classification*, ICCV 2021 — [arXiv](https://arxiv.org/abs/2009.14119)
+- [@pudae81](https://www.kaggle.com/pudae81), *3rd place solution* — threshold calibration strategy and external data tooling — [GitHub](https://github.com/pudae/kaggle-hpa/tree/master/tools)
 - [Human Protein Atlas Kaggle Competition](https://www.kaggle.com/c/human-protein-atlas-image-classification)
